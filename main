@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>配信用かわいい時計</title>
+<style>
+ body {
+   margin: 0;
+   font-family: "Nunito", "Roboto", sans-serif;
+   display: flex;
+   height: 100vh;
+   background-color: #dddddd; /* ページ全体の背景を薄い灰色に */
+ }
+ #settings-panel {
+   width: 300px;
+   max-height: 100vh;
+   overflow-y: auto;
+   background: #ffffffdd;
+   padding: 20px;
+   display: flex;
+   flex-direction: column;
+   gap: 14px;
+   box-shadow: 3px 0 10px rgba(0,0,0,0.15);
+ }
+ #clock-area {
+   flex: 1;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   overflow: hidden;
+ }
+ #clock-box {
+   padding: 30px 50px;
+   border-radius: 20px;
+   font-size: 48px;
+   font-weight: 600;
+   text-align: center;
+   transition: 0.3s;
+   background-color: #ffffff;
+ }
+ #time-box { margin-bottom: 10px; }
+ #date-box { font-size: 24px; opacity: 0.85; }
+ .toggle-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+ .toggle-switch input { display: none; }
+ .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: 0.4s; border-radius: 34px; }
+ .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: 0.4s; border-radius: 50%; }
+ input:checked + .slider { background-color: #66aaff; }
+ input:checked + .slider:before { transform: translateX(24px); }
+ label.option-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+ button { padding: 6px 10px; border-radius: 6px; border: none; background: #66aaff; color: white; cursor: pointer; }
+ input[type=range] { width: 100%; }
+ .slider-label { display: flex; justify-content: space-between; font-size: 12px; }
+ select { padding: 4px; font-size: 14px; width: 100%; }
+ .hidden { display: none; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gloria+Hallelujah&family=Caveat&family=Indie+Flower&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="settings-panel">
+    <h3>設定</h3>
+
+    <label>文字色：<input type="color" id="fontColor" value="#333333"></label>
+    <label>単色背景：<input type="color" id="bgColor" value="#ffffff"></label>
+
+    <label class="option-label">グラデーションを使う
+      <label class="toggle-switch">
+        <input type="checkbox" id="useGradient">
+        <span class="slider"></span>
+      </label>
+    </label>
+    <div id="grad-options" class="hidden">
+        <label>開始色：<input type="color" id="gradStart" value="#aee1ff"></label>
+        <label>終了色：<input type="color" id="gradEnd" value="#ffb3e6"></label>
+    </div>
+
+    <h4>時間設定</h4>
+    <label class="option-label">12時間表記（AM/PM）<label class="toggle-switch"><input type="checkbox" id="use12h"><span class="slider"></span></label></label>
+    <label class="option-label">秒を表示<label class="toggle-switch"><input type="checkbox" id="showSeconds" checked><span class="slider"></span></label></label>
+
+    <h4>日付表示</h4>
+    <label class="option-label">日付を表示<label class="toggle-switch"><input type="checkbox" id="showDate" checked><span class="slider"></span></label></label>
+    <label class="option-label">年を表示<label class="toggle-switch"><input type="checkbox" id="showYear" checked><span class="slider"></span></label></label>
+    <label class="option-label">曜日を表示<label class="toggle-switch"><input type="checkbox" id="showWeek"><span class="slider"></span></label></label>
+    <label class="option-label">YYYY-MM-DD 形式<label class="toggle-switch"><input type="checkbox" id="useISO"><span class="slider"></span></label></label>
+
+    <h4>フォント</h4>
+    <select id="fontSelect">
+        <option value="Nunito">Nunito</option>
+        <option value="Roboto">Roboto</option>
+        <option value="Comic Sans MS">Comic Sans</option>
+        <option value="Courier New">Courier</option>
+        <option value="serif">Serif</option>
+        <option value="Arial">Arial</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Impact">Impact</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Patrick Hand, cursive">Patrick Hand (手書き風)</option>
+        <option value="Gloria Hallelujah, cursive">Gloria Hallelujah (手書き風)</option>
+        <option value="Caveat, cursive">Caveat (手書き風)</option>
+        <option value="Indie Flower, cursive">Indie Flower (手書き風)</option>
+    </select>
+
+    <h4>枠・間隔設定</h4>
+    <label class="slider-label">時間と日付の間隔(px): <span id="spacingVal">10</span></label>
+    <input type="range" id="spacing" min="0" max="100" value="10">
+    <label class="slider-label">枠のパディング(px): <span id="paddingVal">30</span></label>
+    <input type="range" id="padding" min="0" max="100" value="30">
+    <button id="autoPaddingBtn">自動調整</button>
+
+    <h4>OBS URL</h4>
+    <input id="obsUrl" style="width:100%;" readonly>
+    <button id="copyBtn">コピーする</button>
+</div>
+
+<div id="clock-area">
+    <div id="clock-box">
+        <div id="time-box">00:00:00</div>
+        <div id="date-box">0000-00-00</div>
+    </div>
+</div>
+
+<script>
+const fontColor = document.getElementById('fontColor');
+const bgColor = document.getElementById('bgColor');
+const gradStart = document.getElementById('gradStart');
+const gradEnd = document.getElementById('gradEnd');
+const useGradient = document.getElementById('useGradient');
+const fontSelect = document.getElementById('fontSelect');
+const box = document.getElementById('clock-box');
+const timeBox = document.getElementById('time-box');
+const dateBox = document.getElementById('date-box');
+const spacingInput = document.getElementById('spacing');
+const paddingInput = document.getElementById('padding');
+const spacingVal = document.getElementById('spacingVal');
+const paddingVal = document.getElementById('paddingVal');
+const use12h = document.getElementById('use12h');
+const showSeconds = document.getElementById('showSeconds');
+const showDate = document.getElementById('showDate');
+const showYear = document.getElementById('showYear');
+const showWeek = document.getElementById('showWeek');
+const useISO = document.getElementById('useISO');
+
+function updateClock(){
+  const n=new Date();
+  let h=n.getHours();
+  let m=('0'+n.getMinutes()).slice(-2);
+  let s=('0'+n.getSeconds()).slice(-2);
+  if(use12h.checked){
+    const ampm=h>=12?'PM':'AM';
+    h=h%12||12;
+    h=('0'+h).slice(-2);
+    timeBox.textContent=showSeconds.checked?`${h}:${m}:${s} ${ampm}`:`${h}:${m} ${ampm}`;
+  } else {
+    h=('0'+h).slice(-2);
+    timeBox.textContent=showSeconds.checked?`${h}:${m}:${s}`:`${h}:${m}`;
+  }
+  if(!showDate.checked){ dateBox.style.display='none'; return; }
+  dateBox.style.display='block';
+  const y=n.getFullYear(), mo=('0'+(n.getMonth()+1)).slice(-2), da=('0'+n.getDate()).slice(-2), week=['日','月','火','水','木','金','土'][n.getDay()];
+  dateBox.textContent=useISO.checked? (showWeek.checked?`${y}-${mo}-${da} (${week})`:`${y}-${mo}-${da}`) : ((showYear.checked?y+'年 ':'')+`${mo}月 ${da}日`+(showWeek.checked?` (${week})`:''));
+}
+setInterval(updateClock,1000);
+updateClock();
+
+function applyAll(){
+  box.style.color=fontColor.value;
+  box.style.fontFamily=fontSelect.value;
+  box.style.padding=paddingInput.value+'px '+(paddingInput.value*2)+'px';
+  timeBox.style.marginBottom=spacingInput.value+'px';
+  spacingVal.textContent=spacingInput.value;
+  paddingVal.textContent=paddingInput.value;
+  if(useGradient.checked){
+    document.getElementById('grad-options').classList.remove('hidden');
+    box.style.background=`linear-gradient(135deg, ${gradStart.value}, ${gradEnd.value})`;
+  } else {
+    box.style.background='#ffffff';
+    document.getElementById('grad-options').classList.add('hidden');
+  }
+  updateObsUrl();
+}
+
+function updateObsUrl(){
+  const base=location.href.split('?')[0];
+  document.getElementById('obsUrl').value=`${base}?obs=1&font=${fontColor.value}&bg=${bgColor.value}&grad=${useGradient.checked?1:0}&gs=${gradStart.value}&ge=${gradEnd.value}&fnt=${fontSelect.value}`;
+}
+
+[fontColor,bgColor,gradStart,gradEnd,useGradient,fontSelect,spacingInput,paddingInput,use12h,showSeconds,showDate,showYear,showWeek,useISO].forEach(el=>el.addEventListener('input',applyAll));
+applyAll();
+
+// 自動調整
+document.getElementById('autoPaddingBtn').onclick = () => {
+  const computedFontSize = parseInt(window.getComputedStyle(box).fontSize);
+  paddingInput.value = computedFontSize / 1.2;
+  spacingInput.value = computedFontSize / 4;
+  applyAll();
+};
+
+const copyBtn=document.getElementById('copyBtn');
+copyBtn.onclick=()=>{ navigator.clipboard.writeText(document.getElementById('obsUrl').value); copyBtn.textContent='コピーしました！'; setTimeout(()=>copyBtn.textContent='コピーする',1500); };
+
+if(new URLSearchParams(location.search).get('obs')==='1'){ document.getElementById('settings-panel').style.display='none'; document.body.style.margin='0'; }
+</script>
+</body>
+</html>
