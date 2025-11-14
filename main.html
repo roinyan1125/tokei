@@ -121,25 +121,25 @@
     </div>
 </div>
 <script>
-const fontColor = document.getElementById('fontColor');
-const bgColor = document.getElementById('bgColor');
-const gradStart = document.getElementById('gradStart');
-const gradEnd = document.getElementById('gradEnd');
-const useGradient = document.getElementById('useGradient');
-const fontSelect = document.getElementById('fontSelect');
-const box = document.getElementById('clock-box');
-const timeBox = document.getElementById('time-box');
-const dateBox = document.getElementById('date-box');
-const spacingInput = document.getElementById('spacing');
-const paddingInput = document.getElementById('padding');
-const spacingVal = document.getElementById('spacingVal');
-const paddingVal = document.getElementById('paddingVal');
-const use12h = document.getElementById('use12h');
-const showSeconds = document.getElementById('showSeconds');
-const showDate = document.getElementById('showDate');
-const showYear = document.getElementById('showYear');
-const showWeek = document.getElementById('showWeek');
-const useISO = document.getElementById('useISO');
+const fontColor=document.getElementById('fontColor');
+const bgColor=document.getElementById('bgColor');
+const gradStart=document.getElementById('gradStart');
+const gradEnd=document.getElementById('gradEnd');
+const useGradient=document.getElementById('useGradient');
+const fontSelect=document.getElementById('fontSelect');
+const box=document.getElementById('clock-box');
+const timeBox=document.getElementById('time-box');
+const dateBox=document.getElementById('date-box');
+const spacingInput=document.getElementById('spacing');
+const paddingInput=document.getElementById('padding');
+const spacingVal=document.getElementById('spacingVal');
+const paddingVal=document.getElementById('paddingVal');
+const use12h=document.getElementById('use12h');
+const showSeconds=document.getElementById('showSeconds');
+const showDate=document.getElementById('showDate');
+const showYear=document.getElementById('showYear');
+const showWeek=document.getElementById('showWeek');
+const useISO=document.getElementById('useISO');
 
 function updateClock(){
   const n=new Date();
@@ -182,7 +182,7 @@ function applyAll(){
 
 function updateObsUrl(){
   const base=location.href.split('?')[0];
-  document.getElementById('obsUrl').value=`${base}?obs=1&font=${encodeURIComponent(fontColor.value)}&bg=${encodeURIComponent(bgColor.value)}&grad=${useGradient.checked?1:0}&gs=${encodeURIComponent(gradStart.value)}&ge=${encodeURIComponent(gradEnd.value)}&fnt=${encodeURIComponent(fontSelect.value)}&h12=${use12h.checked?1:0}&sec=${showSeconds.checked?1:0}&date=${showDate.checked?1:0}&year=${showYear.checked?1:0}&week=${showWeek.checked?1:0}&iso=${useISO.checked?1:0}&spacing=${spacingInput.value}&padding=${paddingInput.value}`;
+  document.getElementById('obsUrl').value=`${base}?obs=1&font=${fontColor.value}&bg=${bgColor.value}&grad=${useGradient.checked?1:0}&gs=${gradStart.value}&ge=${gradEnd.value}&spacing=${spacingInput.value}&padding=${paddingInput.value}&h12=${use12h.checked?1:0}&sec=${showSeconds.checked?1:0}&date=${showDate.checked?1:0}&year=${showYear.checked?1:0}&week=${showWeek.checked?1:0}&iso=${useISO.checked?1:0}&fnt=${fontSelect.value}`;
 }
 
 [fontColor,bgColor,gradStart,gradEnd,useGradient,fontSelect,spacingInput,paddingInput,use12h,showSeconds,showDate,showYear,showWeek,useISO].forEach(el=>el.addEventListener('input',applyAll));
@@ -197,13 +197,19 @@ document.getElementById('autoPaddingBtn').onclick = () => {
 };
 
 // コピー
+const copyBtn=document.getElementById('copyBtn');
 copyBtn.onclick=()=>{ navigator.clipboard.writeText(document.getElementById('obsUrl').value); copyBtn.textContent='コピーしました！'; setTimeout(()=>copyBtn.textContent='コピーする',1500); };
 
 // URL更新ボタン
 document.getElementById('updateUrlBtn').onclick = updateObsUrl;
 
 // OBS読み込み時の透過
-if(new URLSearchParams(location.search).get('obs')==='1'){ document.getElementById('settings-panel').style.display='none'; document.body.style.margin='0'; box.style.background='transparent'; document.body.style.background='transparent'; }
+if(new URLSearchParams(location.search).get('obs')==='1'){ 
+  document.getElementById('settings-panel').style.display='none';
+  document.body.style.margin='0';
+  box.style.background='transparent';
+  document.body.style.background='transparent';
+} 
 </script>
 </body>
 </html>
