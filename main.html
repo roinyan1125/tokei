@@ -170,12 +170,13 @@ function applyAll(){
   timeBox.style.marginBottom=spacingInput.value+'px';
   spacingVal.textContent=spacingInput.value;
   paddingVal.textContent=paddingInput.value;
+
   if(useGradient.checked){
     document.getElementById('grad-options').classList.remove('hidden');
     box.style.background=`linear-gradient(135deg, ${gradStart.value}, ${gradEnd.value})`;
   } else {
-    box.style.background='#ffffff';
     document.getElementById('grad-options').classList.add('hidden');
+    box.style.background=bgColor.value;
   }
   updateObsUrl();
 }
@@ -203,13 +204,30 @@ copyBtn.onclick=()=>{ navigator.clipboard.writeText(document.getElementById('obs
 // URL更新ボタン
 document.getElementById('updateUrlBtn').onclick = updateObsUrl;
 
-// OBS読み込み時の透過
-if(new URLSearchParams(location.search).get('obs')==='1'){ 
-  document.getElementById('settings-panel').style.display='none';
-  document.body.style.margin='0';
-  box.style.background='transparent';
-  document.body.style.background='transparent';
-} 
+// OBS用URL時の設定反映
+const params = new URLSearchParams(location.search);
+if(params.get('obs')==='1'){
+    document.getElementById('settings-panel').style.display='none';
+    document.body.style.margin='0';
+    
+    // URLパラメータから設定を適用
+    fontColor.value = params.get('font') || '#333333';
+    bgColor.value = params.get('bg') || '#ffffff';
+    useGradient.checked = params.get('grad')==='1';
+    gradStart.value = params.get('gs') || '#aee1ff';
+    gradEnd.value = params.get('ge') || '#ffb3e6';
+    spacingInput.value = params.get('spacing') || 10;
+    paddingInput.value = params.get('padding') || 30;
+    use12h.checked = params.get('h12')==='1';
+    showSeconds.checked = params.get('sec')==='1';
+    showDate.checked = params.get('date')==='1';
+    showYear.checked = params.get('year')==='1';
+    showWeek.checked = params.get('week')==='1';
+    useISO.checked = params.get('iso')==='1';
+    fontSelect.value = params.get('fnt') || 'Nunito';
+
+    applyAll();
+}
 </script>
 </body>
 </html>
