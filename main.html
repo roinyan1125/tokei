@@ -181,9 +181,13 @@ function applyAll(){
   updateObsUrl();
 }
 
+// URLコピー用に # を %23 に変換
+function encodeColor(color){ return color.replace('#','%23'); }
+
 function updateObsUrl(){
   const base=location.href.split('?')[0];
-  document.getElementById('obsUrl').value=`${base}?obs=1&font=${fontColor.value}&bg=${bgColor.value}&grad=${useGradient.checked?1:0}&gs=${gradStart.value}&ge=${gradEnd.value}&spacing=${spacingInput.value}&padding=${paddingInput.value}&h12=${use12h.checked?1:0}&sec=${showSeconds.checked?1:0}&date=${showDate.checked?1:0}&year=${showYear.checked?1:0}&week=${showWeek.checked?1:0}&iso=${useISO.checked?1:0}&fnt=${fontSelect.value}`;
+  const url=`${base}?obs=1&font=${encodeColor(fontColor.value)}&bg=${encodeColor(bgColor.value)}&grad=${useGradient.checked?1:0}&gs=${encodeColor(gradStart.value)}&ge=${encodeColor(gradEnd.value)}&spacing=${spacingInput.value}&padding=${paddingInput.value}&h12=${use12h.checked?1:0}&sec=${showSeconds.checked?1:0}&date=${showDate.checked?1:0}&year=${showYear.checked?1:0}&week=${showWeek.checked?1:0}&iso=${useISO.checked?1:0}&fnt=${fontSelect.value}`;
+  document.getElementById('obsUrl').value=url;
 }
 
 [fontColor,bgColor,gradStart,gradEnd,useGradient,fontSelect,spacingInput,paddingInput,use12h,showSeconds,showDate,showYear,showWeek,useISO].forEach(el=>el.addEventListener('input',applyAll));
@@ -199,7 +203,11 @@ document.getElementById('autoPaddingBtn').onclick = () => {
 
 // コピー
 const copyBtn=document.getElementById('copyBtn');
-copyBtn.onclick=()=>{ navigator.clipboard.writeText(document.getElementById('obsUrl').value); copyBtn.textContent='コピーしました！'; setTimeout(()=>copyBtn.textContent='コピーする',1500); };
+copyBtn.onclick=()=>{ 
+  navigator.clipboard.writeText(document.getElementById('obsUrl').value); 
+  copyBtn.textContent='コピーしました！'; 
+  setTimeout(()=>copyBtn.textContent='コピーする',1500); 
+};
 
 // URL更新ボタン
 document.getElementById('updateUrlBtn').onclick = updateObsUrl;
@@ -210,12 +218,11 @@ if(params.get('obs')==='1'){
     document.getElementById('settings-panel').style.display='none';
     document.body.style.margin='0';
     
-    // URLパラメータから設定を適用
-    fontColor.value = params.get('font') || '#333333';
-    bgColor.value = params.get('bg') || '#ffffff';
+    fontColor.value = params.get('font') ? params.get('font').replace('%23','#') : '#333333';
+    bgColor.value = params.get('bg') ? params.get('bg').replace('%23','#') : '#ffffff';
     useGradient.checked = params.get('grad')==='1';
-    gradStart.value = params.get('gs') || '#aee1ff';
-    gradEnd.value = params.get('ge') || '#ffb3e6';
+    gradStart.value = params.get('gs') ? params.get('gs').replace('%23','#') : '#aee1ff';
+    gradEnd.value = params.get('ge') ? params.get('ge').replace('%23','#') : '#ffb3e6';
     spacingInput.value = params.get('spacing') || 10;
     paddingInput.value = params.get('padding') || 30;
     use12h.checked = params.get('h12')==='1';
