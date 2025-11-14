@@ -9,7 +9,7 @@
    font-family: "Nunito", "Roboto", sans-serif;
    display: flex;
    height: 100vh;
-   background-color: #dddddd; /* ページ全体の背景を薄い灰色に */
+   background-color: #dddddd;
  }
  #settings-panel {
    width: 300px;
@@ -114,14 +114,12 @@
     <button id="copyBtn">コピーする</button>
     <button id="updateUrlBtn">URLを更新</button>
 </div>
-
 <div id="clock-area">
     <div id="clock-box">
         <div id="time-box">00:00:00</div>
         <div id="date-box">0000-00-00</div>
     </div>
 </div>
-
 <script>
 const fontColor = document.getElementById('fontColor');
 const bgColor = document.getElementById('bgColor');
@@ -184,7 +182,7 @@ function applyAll(){
 
 function updateObsUrl(){
   const base=location.href.split('?')[0];
-  document.getElementById('obsUrl').value=`${base}?obs=1&font=${fontColor.value}&bg=${bgColor.value}&grad=${useGradient.checked?1:0}&gs=${gradStart.value}&ge=${gradEnd.value}&fnt=${fontSelect.value}`;
+  document.getElementById('obsUrl').value=`${base}?obs=1&font=${encodeURIComponent(fontColor.value)}&bg=${encodeURIComponent(bgColor.value)}&grad=${useGradient.checked?1:0}&gs=${encodeURIComponent(gradStart.value)}&ge=${encodeURIComponent(gradEnd.value)}&fnt=${encodeURIComponent(fontSelect.value)}&h12=${use12h.checked?1:0}&sec=${showSeconds.checked?1:0}&date=${showDate.checked?1:0}&year=${showYear.checked?1:0}&week=${showWeek.checked?1:0}&iso=${useISO.checked?1:0}&spacing=${spacingInput.value}&padding=${paddingInput.value}`;
 }
 
 [fontColor,bgColor,gradStart,gradEnd,useGradient,fontSelect,spacingInput,paddingInput,use12h,showSeconds,showDate,showYear,showWeek,useISO].forEach(el=>el.addEventListener('input',applyAll));
