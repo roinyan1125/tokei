@@ -112,7 +112,6 @@
     <h4>OBS URL</h4>
     <input id="obsUrl" style="width:100%;" readonly>
     <button id="copyBtn">コピーする</button>
-    <button id="updateUrlBtn">URLを更新</button>
 </div>
 <div id="clock-area">
     <div id="clock-box">
@@ -208,9 +207,6 @@ copyBtn.onclick=()=>{
   copyBtn.textContent='コピーしました！'; 
   setTimeout(()=>copyBtn.textContent='コピーする',1500); 
 };
-
-// URL更新ボタン
-document.getElementById('updateUrlBtn').onclick = updateObsUrl;
 
 // OBS用URL時の設定反映
 const params = new URLSearchParams(location.search);
