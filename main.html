@@ -112,6 +112,7 @@
     <h4>OBS URL</h4>
     <input id="obsUrl" style="width:100%;" readonly>
     <button id="copyBtn">コピーする</button>
+    <button id="updateUrlBtn">URLを更新</button>
 </div>
 
 <div id="clock-area">
@@ -197,10 +198,14 @@ document.getElementById('autoPaddingBtn').onclick = () => {
   applyAll();
 };
 
-const copyBtn=document.getElementById('copyBtn');
+// コピー
 copyBtn.onclick=()=>{ navigator.clipboard.writeText(document.getElementById('obsUrl').value); copyBtn.textContent='コピーしました！'; setTimeout(()=>copyBtn.textContent='コピーする',1500); };
 
-if(new URLSearchParams(location.search).get('obs')==='1'){ document.getElementById('settings-panel').style.display='none'; document.body.style.margin='0'; }
+// URL更新ボタン
+document.getElementById('updateUrlBtn').onclick = updateObsUrl;
+
+// OBS読み込み時の透過
+if(new URLSearchParams(location.search).get('obs')==='1'){ document.getElementById('settings-panel').style.display='none'; document.body.style.margin='0'; box.style.background='transparent'; document.body.style.background='transparent'; }
 </script>
 </body>
 </html>
